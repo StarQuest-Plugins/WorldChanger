@@ -7,50 +7,58 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayersInventory {
 
-    public static void SavePlayerInventory(Player player) {
-        if (!CustomConfigFile.get().contains(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Inventory")) {
-            CustomConfigFile.get().addDefault(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Inventory",
-                    SerializeInventory.itemStackArrayToBase64(player.getInventory().getContents()));
-        }
-        else CustomConfigFile.get().set(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Inventory",
-                SerializeInventory.itemStackArrayToBase64(player.getInventory().getContents()));
-        CustomConfigFile.save();
+    private static String getInventoryPath(Player player, String worldName, String section) {
+        return player.getDisplayName() + "." + worldName + "." + section;
+    }
 
-        if (!CustomConfigFile.get().contains(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Armors")) {
-            CustomConfigFile.get().addDefault(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Armors",
-                    SerializeInventory.itemStackArrayToBase64(player.getInventory().getArmorContents()));
+    private static void saveInventorySection(Player player, String worldName, String section, ItemStack[] contents) {
+        String path = getInventoryPath(player, worldName, section);
+        String serialized = SerializeInventory.itemStackArrayToBase64(contents);
+
+        if (!CustomConfigFile.get().contains(path)) {
+            CustomConfigFile.get().addDefault(path, serialized);
+        } else {
+            CustomConfigFile.get().set(path, serialized);
         }
-        else CustomConfigFile.get().set(player.getDisplayName()+"."+player.getWorld().getName()+"."+"Armors",
-                SerializeInventory.itemStackArrayToBase64(player.getInventory().getArmorContents()));
+
         CustomConfigFile.save();
     }
 
+    public static void SavePlayerInventory(Player player) {
+        String worldName = player.getWorld().getName();
+
+        saveInventorySection(player, worldName, "Inventory", player.getInventory().getContents());
+        saveInventorySection(player, worldName, "Armors", player.getInventory().getArmorContents());
+    }
+
+    public void SaveEmptyInventory(Player player) {
+        String worldName = player.getWorld().getName(); // используем имя мира, а не player.getWorld()
+        saveInventorySection(player, worldName, "Inventory", new ItemStack[0]);
+        saveInventorySection(player, worldName, "Armors", new ItemStack[0]);
+    }
+
     public static void LoadPlayerInventory(WorldCreator world, Player player) {
+        String worldName = world.name();
 
-        if (!CustomConfigFile.get().contains(player.getDisplayName()+"." + world.name()+"." + "Inventory")) {
-            player.getInventory().clear();
-        } else {
-           try {
-               ItemStack[] itemstack = SerializeInventory.itemStackArrayFromBase64(CustomConfigFile.get().getString(player.getDisplayName() + "." + world.name() + "." + "Inventory"));
-               player.getInventory().setContents(itemstack);
-               player.updateInventory();
-           }
-           catch (java.io.IOException e) {
-
-           }
-        }
-
-        if (!CustomConfigFile.get().contains(player.getDisplayName()+"." + world.name()+"." + "Armors")) {
-            player.getInventory().clear();
-        } else {
-            try {
-                ItemStack[] itemstack = SerializeInventory.itemStackArrayFromBase64(CustomConfigFile.get().getString(player.getDisplayName() + "." + world.name() + "." + "Armors"));
-                player.getInventory().setArmorContents(itemstack);
-                player.updateInventory();
+        try {
+            String invPath = getInventoryPath(player, worldName, "Inventory");
+            if (CustomConfigFile.get().contains(invPath)) {
+                ItemStack[] contents = SerializeInventory.itemStackArrayFromBase64(CustomConfigFile.get().getString(invPath));
+                player.getInventory().setContents(contents);
+            } else {
+                player.getInventory().clear();
             }
-            catch (java.io.IOException e) {
 
+            String armorPath = getInventoryPath(player, worldName, "Armors");
+            if (CustomConfigFile.get().contains(armorPath)) {
+                ItemStack[] armors = SerializeInventory.itemStackArrayFromBase64(CustomConfigFile.get().getString(armorPath));
+                player.getInventory().setArmorContents(armors);
             }
+
+            player.updateInventory();
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Можно логировать или вывести сообщение
         }
     }
 }

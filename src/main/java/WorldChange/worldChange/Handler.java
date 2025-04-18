@@ -46,6 +46,6 @@ public class Handler implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         PlayersInventory playerInventory = new PlayersInventory();
-        playerInventory.SavePlayerInventory(player); // Сохраняем текущее состояние
+        playerInventory.SaveEmptyInventory(player); // Сохраняем текущее состояние
     }
 }
