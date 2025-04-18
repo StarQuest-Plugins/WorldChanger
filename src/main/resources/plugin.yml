@@ -1,0 +1,16 @@
+name: WorldChange
+version: '1.0-SNAPSHOT'
+main: WorldChange.worldChange.WorldChange
+api-version: '1.21'
+authors: [ OrlovDeveloper ]
+description: Plugin to change the worlds
+commands:
+  worldchange:
+    description: world change command
+    permission: minecraft.command.op
+  worldadd:
+    description: add world to base
+    permission: minecraft.command.op
+  worldremove:
+    description: remove world from base
+    permission: minecraft.command.op

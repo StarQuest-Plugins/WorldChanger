@@ -1,0 +1,10 @@
+WorldChange\worldChange\AddCommandExecutor.class
+WorldChange\worldChange\SignAction.class
+WorldChange\worldChange\ChangeCommandExecutor.class
+WorldChange\worldChange\Handler.class
+WorldChange\worldChange\WorldChange.class
+WorldChange\worldChange\Inventory\SerializeInventory.class
+WorldChange\worldChange\RemoveCommandExecutor.class
+Config_Files\CustomConfigFile.class
+WorldChange\worldChange\Inventory\PlayersInventory.class
+WorldChange\worldChange\WorldChanger.class
