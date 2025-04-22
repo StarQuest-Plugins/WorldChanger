@@ -2,61 +2,35 @@ package WorldChange.worldChange;
 
 import Config_Files.CustomConfigFile;
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Данный плагин создает возможность перемещаться между существующими мирами
+ * При перемещении в конфиге сохраняется информация о локации и инвентаре игрока,
+ * таким образом за каждым миром закрепляется своя позиция и свой инвентарь.
+ */
 public final class WorldChange extends JavaPlugin {
     private final Logger logger = Bukkit.getLogger();
     private final String pluginName = "WorldChanger";
-
-    public static ItemStack[] playerInventory;
 
     @Override
     public void onEnable() {
         logger.info(pluginName + " onEnable");
 
-        WorldChanger.WorldCreation();
-
         getServer().getPluginManager().registerEvents(new Handler(), this);
 
-        var changeCommandName = "worldchange";
-        var changeCommand = getCommand(changeCommandName);
-        if (changeCommand == null) {
-            var errorMessage = pluginName + " command '" + changeCommandName + "' not found";
-            logger.severe(errorMessage);
-            throw new RuntimeException(errorMessage);
-        }
-        changeCommand.setExecutor(new ChangeCommandExecutor());
-        // poolCommand.setTabCompleter(new PoolTabCompleter());
-
-        var addCommandName = "worldadd";
-        var addCommand = getCommand(addCommandName);
-        if (addCommand == null) {
-            var errorMessage = pluginName + " command '" + addCommandName + "' not found";
-            logger.severe(errorMessage);
-            throw new RuntimeException(errorMessage);
-        }
-        addCommand.setExecutor(new AddCommandExecutor());
-        // poolCommand.setTabCompleter(new PoolTabCompleter());
-
-        var removeCommandName = "worldremove";
-        var removeCommand = getCommand(removeCommandName);
-        if (removeCommand == null) {
-            var errorMessage = pluginName + " command '" + removeCommandName + "' not found";
-            logger.severe(errorMessage);
-            throw new RuntimeException(errorMessage);
-        }
-        removeCommand.setExecutor(new RemoveCommandExecutor());
-        // poolCommand.setTabCompleter(new PoolTabCompleter());
-
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
-
+        // Подгружаем и настраиваем конфиг
         CustomConfigFile.setup(this);
-        CustomConfigFile.get().addDefault("Server","OrlovDev");
+
+        // Устанавливаем значения по умолчанию
+        CustomConfigFile.get().addDefault("Server", "OrlovDev");
+        CustomConfigFile.get().addDefault("worlds", List.of("world"));  // Добавляем мир по умолчанию
+
+        // Копируем дефолтные значения и сохраняем конфиг
         CustomConfigFile.get().options().copyDefaults(true);
         CustomConfigFile.save();
     }

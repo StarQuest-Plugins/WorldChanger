@@ -1,6 +1,7 @@
 package WorldChange.worldChange.Inventory;
 
 import Config_Files.CustomConfigFile;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,8 +38,8 @@ public class PlayersInventory {
         saveInventorySection(player, worldName, "Armors", new ItemStack[0]);
     }
 
-    public static void LoadPlayerInventory(WorldCreator world, Player player) {
-        String worldName = world.name();
+    public static void LoadPlayerInventory(World world, Player player) {
+        String worldName = world.getName();
 
         try {
             String invPath = getInventoryPath(player, worldName, "Inventory");
